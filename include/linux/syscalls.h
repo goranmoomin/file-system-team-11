@@ -83,6 +83,7 @@ union bpf_attr;
 #include <linux/key.h>
 #include <linux/personality.h>
 #include <trace/syscall.h>
+#include <linux/gps.h>
 
 #ifdef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
 /*
@@ -689,6 +690,10 @@ asmlinkage long sys_getgid(void);
 asmlinkage long sys_getegid(void);
 asmlinkage long sys_gettid(void);
 asmlinkage long sys_sysinfo(struct sysinfo __user *info);
+
+/* kernel/gps.c */
+asmlinkage long sys_set_gps_location(struct gps_location *loc);
+asmlinkage long sys_get_gps_location(const char *pathname, struct gps_location *loc);
 
 /* ipc/mqueue.c */
 asmlinkage long sys_mq_open(const char __user *name, int oflag, umode_t mode, struct mq_attr __user *attr);
