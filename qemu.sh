@@ -27,6 +27,4 @@ exec qemu-system-aarch64           `# The QEMU system emulator `\
   `# Tizen's initrd init process discovers these and mounts them appropriately `\
   `# Check out usr/sbin/init in tizen-image/ramdisk.img `\
   -drive file=tizen-image/rootfs.img,format=raw,if=none,id=rootfs -device virtio-blk-device,drive=rootfs  \
-  -drive file=tizen-image/boot.img,format=raw,if=none,id=boot -device virtio-blk-device,drive=boot  \
-  -drive file=tizen-image/modules.img,format=raw,if=none,id=modules -device virtio-blk-device,drive=modules  \
   -drive file=tizen-image/system-data.img,format=raw,if=none,id=system-data -device virtio-blk-device,drive=system-data
