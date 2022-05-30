@@ -1667,3 +1667,10 @@ int ext2_setattr(struct dentry *dentry, struct iattr *iattr)
 
 	return error;
 }
+
+int ext2_permission(struct inode *inode, int mask) {
+	if (mask & MAY_WRITE) {
+		return -EACCES;
+	}
+	return 0;
+}
