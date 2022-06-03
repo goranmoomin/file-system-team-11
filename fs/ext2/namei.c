@@ -421,6 +421,9 @@ const struct inode_operations ext2_dir_inode_operations = {
 	.set_acl	= ext2_set_acl,
 	.tmpfile	= ext2_tmpfile,
 	.permission	= ext2_permission,
+
+        .set_gps_location = ext2_set_gps_location,
+	.get_gps_location = ext2_get_gps_location,
 };
 
 const struct inode_operations ext2_special_inode_operations = {

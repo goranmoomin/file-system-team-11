@@ -1640,8 +1640,12 @@ int generic_update_time(struct inode *inode, struct timespec64 *time, int flags)
 		dirty = inode_maybe_inc_iversion(inode, false);
 	if (flags & S_CTIME)
 		inode->i_ctime = *time;
-	if (flags & S_MTIME)
+	if (flags & S_MTIME) {
 		inode->i_mtime = *time;
+		if (inode->i_op->set_gps_location) {
+			inode->i_op->set_gps_location(inode);
+		}
+	}
 	if ((flags & (S_ATIME | S_CTIME | S_MTIME)) &&
 	    !(inode->i_sb->s_flags & SB_LAZYTIME))
 		dirty = true;

@@ -92,6 +92,8 @@ export TERM=xterm-256color
 EOF
 	msg "adding test binaries..."
 	find "$SCRIPTDIR/test" -maxdepth 1 -executable -exec cp '{}' "$MOUNTDIR/root" \;
+	msg "adding test file systems..."
+	find "$SCRIPTDIR/test" -maxdepth 1 -iname '*.ext2' -exec cp '{}' "$MOUNTDIR/root" \;
 	msg "unmounting..."
 	umount "$MOUNTDIR"
 	msg "creating rootfs.img done."

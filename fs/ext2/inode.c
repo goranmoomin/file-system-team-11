@@ -1308,6 +1308,7 @@ static int ext2_setsize(struct inode *inode, loff_t newsize)
 	dax_sem_up_write(EXT2_I(inode));
 
 	inode->i_mtime = inode->i_ctime = current_time(inode);
+	ext2_set_gps_location(inode);
 	if (inode_needs_sync(inode)) {
 		sync_mapping_buffers(inode->i_mapping);
 		sync_inode_metadata(inode, 1);
@@ -1680,9 +1681,27 @@ int ext2_setattr(struct dentry *dentry, struct iattr *iattr)
 	return error;
 }
 
-int ext2_permission(struct inode *inode, int mask) {
-	/* if (mask & MAY_WRITE) {
+int ext2_permission(struct inode *inode, int mask)
+{
+	int ret = generic_permission(inode, mask);
+	struct gps_location gps_location;
+
+	if (ret) {
+		return ret;
+	}
+
+	if (inode->i_ino == EXT2_ROOT_INO) {
+		return 0;
+	}
+
+	ext2_get_gps_location(inode, &gps_location);
+	printk(KERN_INFO "gps_location lat=%d.%06d lng=%d.%06d\n",
+	       gps_location.lat_integer, gps_location.lat_fractional,
+	       gps_location.lng_integer, gps_location.lng_fractional);
+
+	if (!is_current_gps_location(&gps_location)) {
 		return -EACCES;
-	} */
+	}
+
 	return 0;
 }
