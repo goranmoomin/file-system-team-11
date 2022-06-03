@@ -1,3 +1,5 @@
+#include <linux/fs.h>
+#include <linux/namei.h>
 #include <linux/gps.h>
 #include <linux/syscalls.h>
 #include <linux/types.h>
@@ -55,8 +57,32 @@ SYSCALL_DEFINE1(set_gps_location, struct gps_location __user *, loc)
 	return 0;
 }
 
-SYSCALL_DEFINE2(get_gps_location, const char *, pathname,
+SYSCALL_DEFINE2(get_gps_location, const char __user *, pathname,
 		struct gps_location __user *, loc)
 {
+	struct path path;
+	struct gps_location buf;
+	int (*get_gps_location)(struct inode *, struct gps_location *);
+	int ret;
+
+	if (!pathname || !loc) {
+		return -EINVAL;
+	}
+
+	if ((ret = user_path(pathname, &path))) {
+		return ret;
+	}
+
+	if (!(get_gps_location =
+		      path.dentry->d_inode->i_op->get_gps_location)) {
+		return -ENODEV;
+	}
+
+	get_gps_location(path.dentry->d_inode, &buf);
+
+	if (copy_to_user(loc, &buf, sizeof(buf))) {
+		return -EFAULT;
+	}
+
 	return 0;
 }

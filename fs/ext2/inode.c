@@ -1695,9 +1695,6 @@ int ext2_permission(struct inode *inode, int mask)
 	}
 
 	ext2_get_gps_location(inode, &gps_location);
-	printk(KERN_INFO "gps_location lat=%d.%06d lng=%d.%06d\n",
-	       gps_location.lat_integer, gps_location.lat_fractional,
-	       gps_location.lng_integer, gps_location.lng_fractional);
 
 	if (!ext2_is_close_to_current(&gps_location)) {
 		return -EACCES;
