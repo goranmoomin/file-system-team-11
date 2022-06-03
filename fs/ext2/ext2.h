@@ -810,7 +810,7 @@ extern void ext2_sync_super(struct super_block *sb, struct ext2_super_block *es,
 			    int wait);
 
 /* gps.c */
-extern int is_current_gps_location(struct gps_location *loc);
+extern int ext2_is_close_to_current(struct gps_location *);
 extern int ext2_set_gps_location(struct inode *);
 extern int ext2_get_gps_location(struct inode *, struct gps_location *);
 

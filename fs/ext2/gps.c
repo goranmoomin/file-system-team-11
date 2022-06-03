@@ -1,25 +1,17 @@
 #include "ext2.h"
 
 #include <linux/gps.h>
-#include <linux/fixp-arith.h>
+#include <linux/gps-fixed.h>
 
-/* 6378100 * PI / 180 */
-#define EXT2_GPS_DEG_TO_MET 111319
-
-int is_current_gps_location(struct gps_location *loc)
+int ext2_is_close_to_current(struct gps_location *loc)
 {
-	int ret = 0;
-	s32 tmp;
-
+	int ret;
 	spin_lock(&curloc_lock);
-	tmp = ((s64)(fixp_sin32(loc->lat_integer)) *
-	       fixp_sin32(curloc.lat_integer)) /
-	      S32_MAX;
-	tmp += ((s64)(fixp_cos32(loc->lat_integer)) *
-		fixp_cos32(curloc.lat_integer) / S32_MAX) *
-	       fixp_cos32(abs(loc->lng_integer - curloc.lng_integer)) / S32_MAX;
-	ret = tmp > fixp_cos32(1);
-	/* fixp_cos32((loc->accuracy + curloc.accuracy) / EXT2_GPS_DEG_TO_MET); */
+	ret = is_geo_close(loc->lat_integer, loc->lat_fractional,
+			   loc->lng_integer, loc->lng_fractional,
+			   curloc.lat_integer, curloc.lat_fractional,
+			   curloc.lng_integer, curloc.lng_fractional,
+			   loc->accuracy, curloc.accuracy);
 	spin_unlock(&curloc_lock);
 	return ret;
 }

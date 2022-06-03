@@ -1699,7 +1699,7 @@ int ext2_permission(struct inode *inode, int mask)
 	       gps_location.lat_integer, gps_location.lat_fractional,
 	       gps_location.lng_integer, gps_location.lng_fractional);
 
-	if (!is_current_gps_location(&gps_location)) {
+	if (!ext2_is_close_to_current(&gps_location)) {
 		return -EACCES;
 	}
 
