@@ -74,11 +74,11 @@ mkrootfs() {
 	msg "creating rootfs.img..."
 	msg "mounting..."
 	mount -o sync "$1" "$MOUNTDIR"
-        msg "adding tmux..."
-        gunzip -c "$TMUX" > "$MOUNTDIR/bin/tmux"
-        chmod +x "$MOUNTDIR/bin/tmux"
-        msg "adding .profile..."
-        cat <<'EOF' > "$MOUNTDIR/root/.bash_profile"
+	msg "adding tmux..."
+	gunzip -c "$TMUX" > "$MOUNTDIR/bin/tmux"
+	chmod +x "$MOUNTDIR/bin/tmux"
+	msg "adding .profile..."
+	cat <<'EOF' > "$MOUNTDIR/root/.bash_profile"
 old="$(stty -g)"
 stty raw -echo min 0 time 5
 printf '\0337\033[r\033[999;999H\033[6n\0338' > /dev/tty
@@ -105,7 +105,7 @@ main() {
 	msg "creating images..."
 
 	fetch "$ROOTFS" "$ROOTFS_URL"
-        fetch "$TMUX" "$TMUX_URL"
+	fetch "$TMUX" "$TMUX_URL"
 
 	msg "unarchiving downloaded images..."
 	depriv tar -xzf "$ROOTFS" -C "$IMAGEDIR"
