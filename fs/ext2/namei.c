@@ -422,7 +422,7 @@ const struct inode_operations ext2_dir_inode_operations = {
 	.tmpfile	= ext2_tmpfile,
 	.permission	= ext2_permission,
 
-        .set_gps_location = ext2_set_gps_location,
+	.set_gps_location = ext2_set_gps_location,
 	.get_gps_location = ext2_get_gps_location,
 };
 
