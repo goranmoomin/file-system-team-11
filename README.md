@@ -39,7 +39,7 @@ The overall implementation works as described below:
     code is generic or not.
 
 - The `sys_get_gps_location` syscall uses `user_path` to get the inode
-  for the provided path, and calls the inode operation
+  for the provided path and calls the inode operation
   `get_gps_location` to get the current location of the provided file.
 
 The following kernel files were modified or added:
@@ -48,8 +48,8 @@ The following kernel files were modified or added:
   `fs/inode.c`: Add the appropriate calls to `set_gps_location`.
 - `fs/ext2/ext2.h`: Add properties to the structures `struct
   ext2_inode` and `struct ext2_inode_info`.
-- `fs/ext2/file.c`, `fs/ext2/namei.c`: Add the inode operation implementations to `struct
-  inode_operations` structures.
+- `fs/ext2/file.c`, `fs/ext2/namei.c`: Add the inode operation
+  implementations to `struct inode_operations` structures.
 - `fs/ext2/gps.c`: Implement the GPS inode operations for ext2.
 - `fs/ext2/inode.c`: Update the functions `ext2_iget` and
   `ext2_write_inode` to get and write the new properties.
@@ -71,35 +71,35 @@ having a global spinlock `curloc_lock`.
 Reading from and writing to the GPS location of an inode must also be
 synchronized to prevent data tearing, which might grant permissions
 that should not be granted. For this, the spinlock `i_lock` of the
-inode is locked during read and writes of the location data of
-`struct ext2_inode_info`. Note that `curloc_lock` is expected to be locked
-before locking the inode.
+inode is locked during reads and writes of the location data of
+`struct ext2_inode_info`. Note that `curloc_lock` is expected to be
+locked before locking the inode.
 
 ### Creating the sample file system
 
-As the ext2 file system allows arbitarily sized inode headers,
+As the ext2 file system allows arbitrarily sized inode headers,
 creating the file system didn’t require modifying the mke2fs program;
 creating an empty file with `dd`, creating an empty ext2 file system
 with a bigger inode header (`-I 256` in our case), and adding files
 from QEMU with our custom kernel worked fine.
 
 The sample file system is added to the repository as `test/proj4.fs`;
-the build scripts automatically adds it to the root disk image.
+the build scripts automatically add it to the root disk image.
 
 ## Possible design improvements
 
 ### Are the new `inode_operation`s required?
 
 We have been told in swsnu/osspr2022#118 that the generic GPS
-operations are a hard requirement of the project; however it seems
+operations are a hard requirement of the project; however, it seems
 that the places to update the GPS locations are almost always specific
-to the ext2 implementation, and hence doesn’t require adding a generic
+to the ext2 implementation, and hence don’t require adding a generic
 inode operation.
 
 The only use of `i_op->set_gps_location` is inside the function
 `generic_update_time`, the default implementation of the `update_time`
 inode operation. But we could have easily implemented an
-`ext2_update_time` specific to ext2, and avoid dirtying the generic
+`ext2_update_time` specific to ext2, and avoided dirtying the generic
 `update_time` implementation with GPS-related code. (In fact, we
 planned to update the code with this approach, but we ran out of time
 after a bunch of different exams.)
@@ -119,5 +119,4 @@ locks and having an atomically replaced pointer to a `struct
 gps_location` in the structure `struct ext2_inode_info`. We’re not
 sure if it’s allowed to have a pointer in the inode structure, and the
 specification is quite clear on where and what properties we have to
-add the the inode structures; hence we did not go further on this
-idea.
+add to the inode structures; hence we did not go further on this idea.
